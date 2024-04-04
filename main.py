@@ -19,6 +19,7 @@ class Game(arcade.Window):
 
     def on_draw(self):
         self.clear((255, 255, 255))
+        arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background_textures[self.index_texture])
 
     def on_key_press(self, symbol: int, modifiers: int):
         pass
