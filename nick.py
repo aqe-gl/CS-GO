@@ -32,3 +32,15 @@ class Nick(animate.Animate):
             self.texture = self.right_down
         elif self.side == 'left':
             self.texture = self.left_down
+
+    def next_slide(self):
+        if self.left >= SCREEN_WIDTH:
+            self.center_x = 0
+            return True
+        return False
+
+    def previous_slide(self):
+        if self.right <= 0:
+            self.center_x = SCREEN_WIDTH
+            return True
+        return False
