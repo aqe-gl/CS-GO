@@ -4,6 +4,7 @@ import line
 from constants import *
 from nick import *
 from line import *
+from bullet import *
 
 
 class Game(arcade.Window):
@@ -21,6 +22,7 @@ class Game(arcade.Window):
         self.nick = Nick()
         # Sprite Lists
         self.lines = arcade.SpriteList()
+        self.bullets = arcade.SpriteList()
         self.lines_for_level = []
 
         self.setup()
@@ -42,17 +44,23 @@ class Game(arcade.Window):
                 other_line = line.Line()
                 other_line.set_position(x, y)
                 self.lines_for_level[i].append(other_line)
+        self.append_line(0)
 
     def update(self, delta_time: float):
         if self.game:
             self.nick.update()
             self.engine.update()
+            self.bullets.update()
             if self.is_walk:
                 self.nick.update_animation(delta_time)
             if self.nick.next_slide():
-                self.index_texture += 1
-            if self.nick.previous_slide():
-                self.index_texture -= 1
+                if self.index_texture < len(self.background_textures) - 2:
+                    self.index_texture += 1
+                    self.append_line(-1)
+            elif self.nick.previous_slide():
+                if self.index_texture > 0:
+                    self.index_texture -= 1
+                    self.append_line(1)
 
     def on_draw(self):
         self.clear((255, 255, 255))
@@ -60,6 +68,7 @@ class Game(arcade.Window):
                                       self.background_textures[self.index_texture])
         self.nick.draw()
         self.lines.draw()
+        self.bullets.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -81,6 +90,11 @@ class Game(arcade.Window):
             if self.engine.can_jump():
                 self.engine.jump(JUMP)
 
+        if symbol == arcade.key.SPACE:
+            new_bullet = Bullet(self)
+            new_bullet.set_position(self.nick.center_x + 10, self.nick.center_y + 10)
+            self.bullets.append(new_bullet)
+
     def on_key_release(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT or symbol == arcade.key.RIGHT or symbol == arcade.key.DOWN:
             self.nick.change_x = 0
@@ -89,8 +103,11 @@ class Game(arcade.Window):
 
     def append_line(self, side):
         if side:
-            for i in range(len(self.lines_for_level[self.index_texture + 1])):
+            for i in range(len(self.lines_for_level[self.index_texture + side])):
                 self.lines.pop()
+        for new_line in self.lines_for_level[self.index_texture]:
+            self.lines.append(new_line)
+
 
 
 game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
