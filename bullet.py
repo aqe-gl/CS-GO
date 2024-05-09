@@ -14,5 +14,5 @@ class Bullet(arcade.Sprite):
 
     def update(self):
         self.center_x += self.change_x
-        if self.center_x - self.game.nick.center_x > BULLET_DISTANCE:
+        if abs(self.center_x - self.game.nick.center_x) > BULLET_DISTANCE:
             self.kill()

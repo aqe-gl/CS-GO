@@ -18,6 +18,7 @@ class Game(arcade.Window):
         self.index_texture = 0
         self.game = True
         self.is_walk = False
+        self.down_pressed = False
         # Sprites
         self.nick = Nick()
         # Sprite Lists
@@ -85,6 +86,7 @@ class Game(arcade.Window):
 
         if symbol == arcade.key.DOWN:
             self.nick.to_down()
+            self.down_pressed = True
 
         if symbol == arcade.key.UP:
             if self.engine.can_jump():
@@ -93,6 +95,8 @@ class Game(arcade.Window):
         if symbol == arcade.key.SPACE:
             new_bullet = Bullet(self)
             new_bullet.set_position(self.nick.center_x + 10, self.nick.center_y + 10)
+            if self.down_pressed:
+                new_bullet.center_y = self.nick.center_y - 15
             self.bullets.append(new_bullet)
 
     def on_key_release(self, symbol: int, modifiers: int):
@@ -100,6 +104,7 @@ class Game(arcade.Window):
             self.nick.change_x = 0
             self.is_walk = False
             self.nick.set_texture(0)
+            self.down_pressed = False
 
     def append_line(self, side):
         if side:
