@@ -5,6 +5,7 @@ from constants import *
 from nick import *
 from line import *
 from bullet import *
+from run_man import *
 
 
 class Game(arcade.Window):
@@ -19,12 +20,14 @@ class Game(arcade.Window):
         self.game = True
         self.is_walk = False
         self.down_pressed = False
+        self.lines_for_level = []
+        self.run_men_for_level = []
         # Sprites
         self.nick = Nick()
         # Sprite Lists
         self.lines = arcade.SpriteList()
         self.bullets = arcade.SpriteList()
-        self.lines_for_level = []
+        self.enemies = arcade.SpriteList()
 
         self.setup()
 
@@ -41,10 +44,15 @@ class Game(arcade.Window):
         for i, lines in enumerate(COORDS):
             print(i, lines)
             self.lines_for_level.append([])
+            self.run_men_for_level.append([])
             for x, y in lines:
                 other_line = line.Line()
                 other_line.set_position(x, y)
                 self.lines_for_level[i].append(other_line)
+                # Run men
+                new_run_man = Runman()
+                new_run_man.set_position(x, y + 50)
+                self.run_men_for_level[i].append(new_run_man)
         self.append_line(0)
 
     def update(self, delta_time: float):
@@ -52,6 +60,7 @@ class Game(arcade.Window):
             self.nick.update()
             self.engine.update()
             self.bullets.update()
+            self.enemies.update_animation(delta_time)
             if self.is_walk:
                 self.nick.update_animation(delta_time)
             if self.nick.next_slide():
@@ -70,6 +79,7 @@ class Game(arcade.Window):
         self.nick.draw()
         self.lines.draw()
         self.bullets.draw()
+        self.enemies.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -107,11 +117,19 @@ class Game(arcade.Window):
             self.down_pressed = False
 
     def append_line(self, side):
+        self.append_run_man(side)
         if side:
             for i in range(len(self.lines_for_level[self.index_texture + side])):
                 self.lines.pop()
         for new_line in self.lines_for_level[self.index_texture]:
             self.lines.append(new_line)
+
+    def append_run_man(self, side):
+        if side:
+            for i in range(len(self.run_men_for_level[self.index_texture + side])):
+                self.enemies.pop()
+        for new_run_man in self.run_men_for_level[self.index_texture]:
+            self.enemies.append(new_run_man)
 
 
 
