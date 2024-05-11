@@ -28,6 +28,8 @@ class Game(arcade.Window):
         self.lines = arcade.SpriteList()
         self.bullets = arcade.SpriteList()
         self.enemies = arcade.SpriteList()
+        self.shoot_sound = arcade.Sound('sounds/shoot.wav')
+        self.jump_sound = arcade.Sound('sounds/jump.wav')
 
         self.setup()
 
@@ -101,10 +103,12 @@ class Game(arcade.Window):
         if symbol == arcade.key.UP:
             if self.engine.can_jump():
                 self.engine.jump(JUMP)
+                self.jump_sound.play(1)
 
         if symbol == arcade.key.SPACE:
             new_bullet = Bullet(self)
             new_bullet.set_position(self.nick.center_x + 10, self.nick.center_y + 10)
+            self.shoot_sound.play(1)
             if self.down_pressed:
                 new_bullet.center_y = self.nick.center_y - 15
             self.bullets.append(new_bullet)
