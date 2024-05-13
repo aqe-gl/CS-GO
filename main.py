@@ -31,10 +31,15 @@ class Game(arcade.Window):
         self.shoot_sound = arcade.Sound('sounds/shoot.wav')
         self.jump_sound = arcade.Sound('sounds/jump.wav')
 
+        # Music
+        self.music = arcade.Sound('sounds/Metallica Master Of Puppets.mp3')
+
         self.setup()
 
         # Physics
         self.engine = arcade.PhysicsEnginePlatformer(self.nick, self.lines, GRAVITY)
+
+        self.music.play(1)
 
     def setup(self):
         for i in range(0, 900, 100):
@@ -63,6 +68,7 @@ class Game(arcade.Window):
             self.engine.update()
             self.bullets.update()
             self.enemies.update_animation(delta_time)
+
             if self.is_walk:
                 self.nick.update_animation(delta_time)
             if self.nick.next_slide():
