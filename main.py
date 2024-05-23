@@ -6,6 +6,8 @@ from nick import *
 from line import *
 from bullet import *
 from run_man import *
+import random
+from sniper import *
 
 
 class Game(arcade.Window):
@@ -22,12 +24,15 @@ class Game(arcade.Window):
         self.down_pressed = False
         self.lines_for_level = []
         self.run_men_for_level = []
+        self.run_men_engine = []
+        self.snipers_for_level = []
         # Sprites
         self.nick = Nick()
         # Sprite Lists
         self.lines = arcade.SpriteList()
         self.bullets = arcade.SpriteList()
         self.enemies = arcade.SpriteList()
+        self.snipers = arcade.SpriteList()
         self.shoot_sound = arcade.Sound('sounds/shoot.wav')
         self.jump_sound = arcade.Sound('sounds/jump.wav')
 
@@ -57,9 +62,13 @@ class Game(arcade.Window):
                 other_line.set_position(x, y)
                 self.lines_for_level[i].append(other_line)
                 # Run men
-                new_run_man = Runman()
-                new_run_man.set_position(x, y + 50)
+                new_run_man = Runman(self)
+                if x == -100:
+                    new_run_man.set_position(random.randint(50, SCREEN_WIDTH - 50), 100)
+                else:
+                    new_run_man.set_position(x, y + 50)
                 self.run_men_for_level[i].append(new_run_man)
+
         self.append_line(0)
 
     def update(self, delta_time: float):
@@ -68,6 +77,7 @@ class Game(arcade.Window):
             self.engine.update()
             self.bullets.update()
             self.enemies.update_animation(delta_time)
+            self.enemies.update()
 
             if self.is_walk:
                 self.nick.update_animation(delta_time)
@@ -79,6 +89,8 @@ class Game(arcade.Window):
                 if self.index_texture > 0:
                     self.index_texture -= 1
                     self.append_line(1)
+            for i in self.run_men_engine:
+                i.update()
 
     def on_draw(self):
         self.clear((255, 255, 255))
@@ -135,11 +147,13 @@ class Game(arcade.Window):
             self.lines.append(new_line)
 
     def append_run_man(self, side):
+        self.run_men_engine.clear()
         if side:
             for i in range(len(self.run_men_for_level[self.index_texture + side])):
                 self.enemies.pop()
         for new_run_man in self.run_men_for_level[self.index_texture]:
             self.enemies.append(new_run_man)
+            self.run_men_engine.append(arcade.PhysicsEnginePlatformer(new_run_man, self.lines, GRAVITY))
 
 
 
