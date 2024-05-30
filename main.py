@@ -8,6 +8,7 @@ from bullet import *
 from run_man import *
 import random
 from sniper import *
+from coords import *
 
 
 class Game(arcade.Window):
@@ -33,18 +34,19 @@ class Game(arcade.Window):
         self.bullets = arcade.SpriteList()
         self.enemies = arcade.SpriteList()
         self.snipers = arcade.SpriteList()
+        self.sniper_bullets = arcade.SpriteList()
         self.shoot_sound = arcade.Sound('sounds/shoot.wav')
         self.jump_sound = arcade.Sound('sounds/jump.wav')
 
         # Music
-        self.music = arcade.Sound('sounds/Metallica Master Of Puppets.mp3')
+        # self.music = arcade.Sound('sounds/Metallica Master Of Puppets.mp3')
 
         self.setup()
 
         # Physics
         self.engine = arcade.PhysicsEnginePlatformer(self.nick, self.lines, GRAVITY)
 
-        self.music.play(1)
+        # self.music.play(1)
 
     def setup(self):
         for i in range(0, 900, 100):
@@ -67,7 +69,15 @@ class Game(arcade.Window):
                     new_run_man.set_position(random.randint(50, SCREEN_WIDTH - 50), 100)
                 else:
                     new_run_man.set_position(x, y + 50)
+
                 self.run_men_for_level[i].append(new_run_man)
+
+        for i, snipers in enumerate(COORDS_SNIPERS):
+            self.snipers_for_level.append([])
+            for x, y in snipers:
+                new_sniper = Sniper(self)
+                new_sniper.set_position(x, y)
+                self.snipers_for_level[i].append(new_sniper)
 
         self.append_line(0)
 
@@ -78,6 +88,8 @@ class Game(arcade.Window):
             self.bullets.update()
             self.enemies.update_animation(delta_time)
             self.enemies.update()
+            self.snipers.update()
+            self.sniper_bullets.update()
 
             if self.is_walk:
                 self.nick.update_animation(delta_time)
@@ -100,6 +112,8 @@ class Game(arcade.Window):
         self.lines.draw()
         self.bullets.draw()
         self.enemies.draw()
+        self.snipers.draw()
+        self.sniper_bullets.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -140,6 +154,7 @@ class Game(arcade.Window):
 
     def append_line(self, side):
         self.append_run_man(side)
+        self.append_sniper(side)
         if side:
             for i in range(len(self.lines_for_level[self.index_texture + side])):
                 self.lines.pop()
@@ -154,6 +169,14 @@ class Game(arcade.Window):
         for new_run_man in self.run_men_for_level[self.index_texture]:
             self.enemies.append(new_run_man)
             self.run_men_engine.append(arcade.PhysicsEnginePlatformer(new_run_man, self.lines, GRAVITY))
+
+
+    def append_sniper(self, side):
+        if side:
+            for i in range(len(self.snipers_for_level[self.index_texture + side])):
+                self.snipers.pop()
+        for new_sniper in self.snipers_for_level[self.index_texture]:
+            self.snipers.append(new_sniper)
 
 
 

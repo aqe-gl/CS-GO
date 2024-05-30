@@ -16,10 +16,13 @@ class Nick(animate.Animate):
         for i in range(6):
             self.left_textures.append(arcade.load_texture(f'go_bill/{i}.gif', flipped_horizontally=True))
             self.right_textures.append(arcade.load_texture(f'go_bill/{i}.gif', flipped_horizontally=False))
+        self.lives = 3
 
     def update(self):
         self.center_x += self.change_x
         self.center_y += self.change_y
+        if self.lives <= 0:
+            self.kill()
 
     def set_side(self):
         if self.side == 'left':

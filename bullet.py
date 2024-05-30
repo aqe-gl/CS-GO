@@ -16,3 +16,22 @@ class Bullet(arcade.Sprite):
         self.center_x += self.change_x
         if abs(self.center_x - self.game.nick.center_x) > BULLET_DISTANCE:
             self.kill()
+
+
+class SniperBullet(Bullet):
+    def __init__(self, window, direction_x, direction_y, x, y):
+        super().__init__(window)
+        self.set_position(x, y + 10)
+        self.change_x = direction_x
+        self.change_y = direction_y
+        self.created_x = x
+
+    def update(self):
+        self.center_x += self.change_x
+        self.center_y += self.change_y
+        if abs(self.center_x - self.created_x) > BULLET_DISTANCE:
+            self.kill()
+        if arcade.check_for_collision(self, self.game.nick):
+            self.game.nick.lives -= 1
+            self.kill()
+
