@@ -14,6 +14,7 @@ class Sniper(arcade.Sprite):
         self.sniper_left_angle = arcade.load_texture('sniper/sniper_angle.png')
         self.sniper_right_angle = arcade.load_texture('sniper/sniper_angle.png', flipped_horizontally=True)
         self.last_reloading = time.time()
+        self.shot_sound = arcade.Sound('sounds/shoot.wav')
 
     def update(self):
         if self.game.nick.center_y < self.center_y:
@@ -31,10 +32,14 @@ class Sniper(arcade.Sprite):
                 self.texture = self.sniper_right
                 self.shot(10, 0)
 
+        if self.lives <= 0:
+            self.kill()
+
     def shot(self, direction_x, direction_y):
         if time.time() - self.last_reloading > 3:
             x = self.center_x
             y = self.center_y
             new_bullet = bullet.SniperBullet(self.game, direction_x, direction_y, x, y)
+            self.shot_sound.play(0.8)
             self.game.sniper_bullets.append(new_bullet)
             self.last_reloading = time.time()

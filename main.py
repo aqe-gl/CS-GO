@@ -27,6 +27,10 @@ class Game(arcade.Window):
         self.run_men_for_level = []
         self.run_men_engine = []
         self.snipers_for_level = []
+        self.shoot_sound = arcade.Sound('sounds/shoot.wav')
+        self.jump_sound = arcade.Sound('sounds/jump.wav')
+        self.coin_sound = arcade.Sound('sounds/coin.wav')
+        self.game_over = arcade.load_texture('game_over.jpg')
         # Sprites
         self.nick = Nick()
         # Sprite Lists
@@ -35,8 +39,7 @@ class Game(arcade.Window):
         self.enemies = arcade.SpriteList()
         self.snipers = arcade.SpriteList()
         self.sniper_bullets = arcade.SpriteList()
-        self.shoot_sound = arcade.Sound('sounds/shoot.wav')
-        self.jump_sound = arcade.Sound('sounds/jump.wav')
+
 
         # Music
         # self.music = arcade.Sound('sounds/Metallica Master Of Puppets.mp3')
@@ -103,17 +106,22 @@ class Game(arcade.Window):
                     self.append_line(1)
             for i in self.run_men_engine:
                 i.update()
+            if self.nick.lives <= 0:
+                self.game = False
 
     def on_draw(self):
-        self.clear((255, 255, 255))
-        arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT,
-                                      self.background_textures[self.index_texture])
-        self.nick.draw()
-        self.lines.draw()
-        self.bullets.draw()
-        self.enemies.draw()
-        self.snipers.draw()
-        self.sniper_bullets.draw()
+        if self.game:
+            self.clear((255, 255, 255))
+            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT,
+                                          self.background_textures[self.index_texture])
+            self.nick.draw()
+            self.lines.draw()
+            self.bullets.draw()
+            self.enemies.draw()
+            self.snipers.draw()
+            self.sniper_bullets.draw()
+        else:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.game_over)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -165,7 +173,8 @@ class Game(arcade.Window):
         self.run_men_engine.clear()
         if side:
             for i in range(len(self.run_men_for_level[self.index_texture + side])):
-                self.enemies.pop()
+                if len(self.enemies):
+                    self.enemies.pop()
         for new_run_man in self.run_men_for_level[self.index_texture]:
             self.enemies.append(new_run_man)
             self.run_men_engine.append(arcade.PhysicsEnginePlatformer(new_run_man, self.lines, GRAVITY))
@@ -174,7 +183,8 @@ class Game(arcade.Window):
     def append_sniper(self, side):
         if side:
             for i in range(len(self.snipers_for_level[self.index_texture + side])):
-                self.snipers.pop()
+                if len(self.snipers):
+                    self.snipers.pop()
         for new_sniper in self.snipers_for_level[self.index_texture]:
             self.snipers.append(new_sniper)
 

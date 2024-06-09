@@ -17,6 +17,19 @@ class Bullet(arcade.Sprite):
         if abs(self.center_x - self.game.nick.center_x) > BULLET_DISTANCE:
             self.kill()
 
+        snipers = arcade.check_for_collision_with_list(self, self.game.snipers)
+        for i in snipers:
+            i.lives -= 1
+            arcade.play_sound(self.game.coin_sound)
+
+        runmen = arcade.check_for_collision_with_list(self, self.game.enemies)
+        for runman in runmen:
+            runman.lives -= 1
+            arcade.play_sound(self.game.coin_sound)
+
+        if len(snipers) > 0 or len(runmen) > 0:
+            self.kill()
+
 
 class SniperBullet(Bullet):
     def __init__(self, window, direction_x, direction_y, x, y):
@@ -33,5 +46,6 @@ class SniperBullet(Bullet):
             self.kill()
         if arcade.check_for_collision(self, self.game.nick):
             self.game.nick.lives -= 1
+            arcade.play_sound(self.game.nick.pain_sound)
             self.kill()
 

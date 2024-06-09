@@ -17,6 +17,7 @@ class Nick(animate.Animate):
             self.left_textures.append(arcade.load_texture(f'go_bill/{i}.gif', flipped_horizontally=True))
             self.right_textures.append(arcade.load_texture(f'go_bill/{i}.gif', flipped_horizontally=False))
         self.lives = 3
+        self.pain_sound = arcade.Sound('sounds/pain.wav')
 
     def update(self):
         self.center_x += self.change_x

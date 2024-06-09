@@ -25,3 +25,6 @@ class Runman(animate.Animate):
                 self.textures = self.right_textures
         else:
             self.change_x = 0
+
+        if self.lives <= 0:
+            self.kill()
