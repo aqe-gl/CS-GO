@@ -1,6 +1,7 @@
 import arcade
 import animate
 from constants import SCALING
+import random
 
 
 class Runman(animate.Animate):
@@ -14,14 +15,15 @@ class Runman(animate.Animate):
             self.right_textures.append(arcade.load_texture(f'runman/frame-0{i}.gif', flipped_horizontally=True))
         self.side = False
         self.window = window
+        self.speed = random.randint(1, 12)
 
     def update(self):
         if abs(self.center_x - self.window.nick.center_x) < 600:
             if self.window.nick.center_x < self.center_x:
-                self.change_x = -1
+                self.change_x = -self.speed
                 self.textures = self.left_textures
             else:
-                self.change_x = 1
+                self.change_x = self.speed
                 self.textures = self.right_textures
         else:
             self.change_x = 0

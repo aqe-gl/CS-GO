@@ -1,3 +1,5 @@
+import time
+
 import arcade
 
 import line
@@ -42,6 +44,8 @@ class Game(arcade.Window):
         self.snipers = arcade.SpriteList()
         self.sniper_bullets = arcade.SpriteList()
         self.lives = arcade.SpriteList()
+        self.win = False
+        self.time_win = time.time()
 
 
         # Music
@@ -118,6 +122,8 @@ class Game(arcade.Window):
                 self.game = False
             if self.index_texture == len(self.background_textures) - 2 and not len(self.snipers) and not len(self.enemies):
                 self.index_texture += 1
+                self.win = True
+                self.time_win = time.time()
 
 
 
@@ -133,6 +139,8 @@ class Game(arcade.Window):
             self.snipers.draw()
             self.sniper_bullets.draw()
             self.lives.draw()
+            if self.win and time.time() - self.time_win > 3:
+                arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.victory)
         else:
             arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.game_over)
 
