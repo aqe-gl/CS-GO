@@ -1,6 +1,7 @@
 import arcade
 
 import line
+import lives
 from constants import *
 from nick import *
 from line import *
@@ -15,6 +16,7 @@ class Game(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         # Textures for background
+        self.victory = arcade.load_texture('endgame.png')
         self.background_textures = []
         for i in range(1, 16):
             self.background_textures.append(arcade.load_texture(f'background/Map{i}.png'))
@@ -39,17 +41,18 @@ class Game(arcade.Window):
         self.enemies = arcade.SpriteList()
         self.snipers = arcade.SpriteList()
         self.sniper_bullets = arcade.SpriteList()
+        self.lives = arcade.SpriteList()
 
 
         # Music
-        # self.music = arcade.Sound('sounds/Metallica Master Of Puppets.mp3')
+        self.music = arcade.Sound('sounds/main_theme.mp3')
 
         self.setup()
 
         # Physics
         self.engine = arcade.PhysicsEnginePlatformer(self.nick, self.lines, GRAVITY)
 
-        # self.music.play(1)
+        self.music.play(3)
 
     def setup(self):
         for i in range(0, 900, 100):
@@ -84,6 +87,11 @@ class Game(arcade.Window):
 
         self.append_line(0)
 
+        for i in range(self.nick.lives):
+            nick_life = lives.Lives()
+            nick_life.set_position(50 + 40 * i, SCREEN_HEIGHT - 50)
+            self.lives.append(nick_life)
+
     def update(self, delta_time: float):
         if self.game:
             self.nick.update()
@@ -108,6 +116,10 @@ class Game(arcade.Window):
                 i.update()
             if self.nick.lives <= 0:
                 self.game = False
+            if self.index_texture == len(self.background_textures) - 2 and not len(self.snipers) and not len(self.enemies):
+                self.index_texture += 1
+
+
 
     def on_draw(self):
         if self.game:
@@ -120,6 +132,7 @@ class Game(arcade.Window):
             self.enemies.draw()
             self.snipers.draw()
             self.sniper_bullets.draw()
+            self.lives.draw()
         else:
             arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.game_over)
 

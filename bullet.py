@@ -47,5 +47,6 @@ class SniperBullet(Bullet):
         if arcade.check_for_collision(self, self.game.nick):
             self.game.nick.lives -= 1
             arcade.play_sound(self.game.nick.pain_sound)
+            self.game.lives.pop()
             self.kill()
 
